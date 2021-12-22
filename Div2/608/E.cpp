@@ -55,7 +55,7 @@ void solve() {
             lo = mid;
     }
     ll res = lo * 2;
-    lo = -1, hi = n/2;
+    lo = 0, hi = n/2;
     // then binary search on even
     while (lo + 1 < hi) {
         ll mid = lo + (hi-lo)/2;
