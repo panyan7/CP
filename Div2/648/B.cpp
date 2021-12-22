@@ -8,6 +8,25 @@ int tt = 1, n, m, k;
 
 // check long long
 void solve() {
+    cin >> n;
+    vector<int> a(n), b(n);
+    for (auto& x : a)
+        cin >> x;
+    for (auto& x : b)
+        cin >> x;
+    for (int i = 1; i < n; i++) {
+        if (b[i] != b[0]) {
+            cout << "Yes\n";
+            return;
+        }
+    }
+    for (int i = 1; i < n; i++) {
+        if (a[i] < a[i-1]) {
+            cout << "No\n";
+            return;
+        }
+    }
+    cout << "Yes\n";
 }
 
 int main() {
