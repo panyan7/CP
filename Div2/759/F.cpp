@@ -8,7 +8,7 @@ template <int MOD>
 struct ModNum {
     int v;
     ModNum() : v(0) {}
-    ModNum(int64_t v_) : v(int(v_ % MOD)) {}
+    ModNum(int64_t v_) : v(int((v_ + MOD) % MOD)) {}
     explicit operator int() const { return v; }
     friend ostream& operator<<(ostream& os, const ModNum& m) {
         return os << m.v;
@@ -95,42 +95,52 @@ public:
 const int MOD = 998244353;
 using num = ModNum<MOD>;
 int tt = 1, n, m;
-num one[200010], l[200010], g[200010];
+ll a[200010];
+num dp[200010][2], p[200010][2];
+vector<int> st;
 
 void solve() {
     cin >> n;
-    vector<ll> a(n);
-    for (auto& x : a)
-        cin >> x;
-    int i = 0;
-    while (i < n) {
-        int j = i+1, lo = j;
-        while (j < n && a[j] >= a[j-1]) {
-            j++;
+    for (int i = 1; i <= n; i++)
+        cin >> a[i];
+    dp[0][0] = 1;
+    dp[0][1] = 0;
+    dp[1][0] = 0;
+    dp[1][1] = a[1];
+    p[0][0] = 1;
+    p[0][1] = 0;
+    p[1][0] = 1;
+    p[1][1] = a[1];
+    st.push_back(0);
+    st.push_back(1);
+    a[0] = 0;
+    for (int i = 2; i <= n; i++) {
+        dp[i][0] = dp[i-1][0];
+        dp[i][1] = dp[i-1][1];
+        while (st.size() > 0 && a[st.back()] >= a[i]) {
+            int j = st.back();
+            st.pop_back();
+            // st.back() to j-1 needs to be updated
+            // originally was calculated using a[j], now should be using a[i]
+            dp[i][0] = dp[i][0] + (p[j-1][1] - p[st.back()-1][1]) * (a[i] - a[j]);
+            dp[i][1] = dp[i][1] + (p[j-1][0] - p[st.back()-1][0]) * (a[i] - a[j]);
         }
-        int mid = j-1;
-        while (j < n && a[j] < a[j-1]) {
-            j++;
-        }
-        int hi = j-1;
-        int k = min(a[mid-1], a[mid+1]);
-        vector<num> l(mid-lo+1), g(mid-lo+1);
-        l[0] = 1;
-        for (int i = lo+1; i <= mid-1; i++) {
-            l[i-lo] = l[i-1-lo] * (min(k, a[i])-1) + g[i-1-lo] * min(k, a[i]);
-            g[i-lo] = g[i-1-lo] * max(a[i]-k-1, 0) + l[i-1-lo] * max(a[i]-k, 0);
-        }
-        for (int i = hi-1; i >= mid+1; i--) {
-
-        }
-        num total = l[]
+        st.push_back(i);
+        dp[i][0] += dp[i-1][1] * a[i];
+        dp[i][1] += dp[i-1][0] * a[i];
+        p[i][0] = p[i-1][0] + dp[i][0];
+        p[i][1] = p[i-1][1] + dp[i][1];
     }
+    num res = dp[n][1] - dp[n][0];
+    if (n % 2 == 0)
+        res = 0 - res;
+    cout << res << "\n";
 }
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> tt;
+    //cin >> tt;
     while (tt--)
         solve();
     return 0;

@@ -95,25 +95,52 @@ const int MOD = 1e9+7;
 // const int MOD = 998244353;
 using num = ModNum<MOD>;
 int tt = 1, n, m;
-num dp[2000010];
+num fact[200005];
+ll pow_cnt[55], suffix[55];
+
+num choose(int n, int k) {
+    if (n < k)
+        return 0;
+    return fact[n] / fact[n-k] / fact[k];
+}
 
 void solve() {
     cin >> n;
-    cout << dp[n] << "\n";
+    // odd doesn't matter
+    // sum is odd: doesn't matter
+    // can be decomposed into sum of odds: doesn't matter
+    // in conclusion, exists odd: doesn't matter
+    // if all even, only if it can be divided into two parts with equal power of 2
+    vector<ll> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+        ll x = a[i];
+        int cnt = 0;
+        while (x % 2 == 0) {
+            cnt++;
+            x /= 2;
+        }
+        pow_cnt[cnt]++;
+    }
+    num res = pow(num(2), n) - pow(num(2), n-pow_cnt[0]);
+    for (int i = 50; i >= 1; i--) {
+        suffix[i] = suffix[i+1] + pow_cnt[i];
+    }
+    for (int i = 1; i <= 50; i++) {
+        for (int j = 2; j <= pow_cnt[i]; j += 2) {
+            res += choose(pow_cnt[i], j) * pow(num(2), suffix[i+1]);
+        }
+    }
+    cout << res << "\n";
 }
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> tt;
-    dp[3] = 4;
-    dp[4] = 4;
-    dp[5] = 12;
-    for (int i = 6; i <= 2000000; i += 3) {
-        dp[i] = dp[i-1] + dp[i-2] * 2 + 4;
-        dp[i+1] = dp[i] + dp[i-1] * 2;
-        dp[i+2] = dp[i+1] + dp[i] * 2;
-    }
+    fact[0] = 1;
+    for (int i = 1; i <= 200000; i++)
+        fact[i] = fact[i-1] * i;
+    //cin >> tt;
     while (tt--)
         solve();
     return 0;

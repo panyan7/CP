@@ -91,29 +91,54 @@ public:
     }
 };
 
-const int MOD = 1e9+7;
-// const int MOD = 998244353;
+// const int MOD = 1e9+7;
+const int MOD = 998244353;
 using num = ModNum<MOD>;
+num fact[300005];
 int tt = 1, n, m;
-num dp[2000010];
+
+num choose(int n, int k) {
+    if (k > n)
+        return 0;
+    return fact[n] / fact[n-k] / fact[k];
+}
 
 void solve() {
-    cin >> n;
-    cout << dp[n] << "\n";
+    int k;
+    cin >> n >> k;
+    vector<pll> a(n);
+    for (auto& x : a)
+        cin >> x.first >> x.second;
+    sort(a.begin(), a.end());
+    priority_queue<pll, vector<pll>, greater<pll>> pq;
+    // sweep line
+    num res = 0;
+    int num_old = 0, num_new = 0;
+    for (int i = 0; i < n; i++) {
+        while (!pq.empty() && pq.top().first < a[i].first) {
+            pq.pop();
+            num_old--;
+        }
+        pq.push({a[i].second, i});
+        num_new++;
+        if (i+1 < n && a[i+1].first == a[i].first)
+            continue;
+        //cout << num_old << "/" << num_new << " ";
+        res += (choose(num_old + num_new, k) - choose(num_old, k));
+        num_old += num_new;
+        num_new = 0;
+        //cout << res << " ";
+    }
+    cout << res << "\n";
 }
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> tt;
-    dp[3] = 4;
-    dp[4] = 4;
-    dp[5] = 12;
-    for (int i = 6; i <= 2000000; i += 3) {
-        dp[i] = dp[i-1] + dp[i-2] * 2 + 4;
-        dp[i+1] = dp[i] + dp[i-1] * 2;
-        dp[i+2] = dp[i+1] + dp[i] * 2;
-    }
+    //cin >> tt;
+    fact[0] = 1;
+    for (int i = 1; i <= 300000; i++)
+        fact[i] = fact[i-1] * i;
     while (tt--)
         solve();
     return 0;
