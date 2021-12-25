@@ -106,13 +106,8 @@ int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
     cin >> tt;
-    dp[3] = 4;
-    dp[4] = 4;
-    dp[5] = 12;
-    for (int i = 6; i <= 2000000; i += 3) {
-        dp[i] = dp[i-1] + dp[i-2] * 2 + 4;
-        dp[i+1] = dp[i] + dp[i-1] * 2;
-        dp[i+2] = dp[i+1] + dp[i] * 2;
+    for (int i = 3; i <= 2000000; i++) {
+        dp[i] = dp[i-1] + dp[i-2] * 2 + (i % 3 == 0 ? 4 : 0);
     }
     while (tt--)
         solve();
