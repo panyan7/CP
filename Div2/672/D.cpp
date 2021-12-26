@@ -111,7 +111,6 @@ void solve() {
         cin >> x.first >> x.second;
     sort(a.begin(), a.end());
     priority_queue<pll, vector<pll>, greater<pll>> pq;
-    // sweep line
     num res = 0;
     int num_old = 0, num_new = 0;
     for (int i = 0; i < n; i++) {
@@ -123,11 +122,9 @@ void solve() {
         num_new++;
         if (i+1 < n && a[i+1].first == a[i].first)
             continue;
-        //cout << num_old << "/" << num_new << " ";
         res += (choose(num_old + num_new, k) - choose(num_old, k));
         num_old += num_new;
         num_new = 0;
-        //cout << res << " ";
     }
     cout << res << "\n";
 }

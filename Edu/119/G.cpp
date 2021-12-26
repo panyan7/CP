@@ -96,13 +96,68 @@ const int MOD = 998244353;
 using num = ModNum<MOD>;
 int tt = 1, n, m;
 
+template<class T_in, class T_out>
+vector<T_out> mobius_transform(vector<T_in>& a) {
+    assert(a.size() == (1 << n));
+    vector<T_out> f(1 << n);
+    for (int i = 0; i < (1 << n); i++)
+        f[i] = a[i];
+    for (int i = 0; i < n; i++)
+        for (int base = 0; base < (1 << n); base += (1 << (i+1)))
+            for (int mask = base; mask < base + (1 << i); mask++)
+                f[mask + (1 << i)] -= f[mask];
+    return f;
+}
+
 void solve() {
+    cin >> n;
+    vector<array<int,26>> a;
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+        int j = 0;
+        array<int,26> cnt = {};
+        for (char c : s)
+            cnt[c-'a']++;
+        a.push_back(cnt);
+    }
+    vector<num> b(1 << n, 0);
+    for (int mask = 1; mask < (1 << n); mask++) {
+        vector<int> mins(26, INT_MAX);
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                for (int c = 0; c < 26; c++) {
+                    mins[c] = min(mins[c], a[i][c]);
+                }
+            }
+        }
+        b[mask] = 1;
+        for (int c = 0; c < 26; c++) {
+            b[mask] *= num(mins[c] + 1);
+        }
+    }
+
+    vector<num> f = mobius_transform<num, num>(b);
+    for (int mask = 1; mask < (1 << n); mask++) {
+        if (__builtin_popcount(mask) % 2 == 0)
+            f[mask] = num(0)-f[mask];
+    }
+
+    ll ans = 0;
+    for (int mask = 1; mask < (1 << n); mask++) {
+        int k = __builtin_popcount(mask), sm = 0;
+        for (int i = 0; i < n; i++)
+            if (mask & (1 << i))
+                sm += (i+1);
+        ans ^= (ll)f[mask].v * k * sm;
+    }
+    cout << ans << "\n";
 }
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin >> tt;
+    //cin >> tt;
     while (tt--)
         solve();
     return 0;
