@@ -79,7 +79,7 @@ public:
     friend ModNum operator/(const ModNum& a, const ModNum& b) {
         return ModNum(a) /= b;
     }
-    friend ModNum pow(const ModNum& a, int e) {
+    friend ModNum pow(const ModNum& a, ll e) {
         ModNum res = 1;
         ModNum b(a);
         while (e) {
@@ -93,66 +93,92 @@ public:
 
 const int MOD = 1e9+7;
 using num = ModNum<MOD>;
-int t = 1, n, m, k, q;
+ll t = 1, n, m, k, q;
+unordered_map<ll, array<num,6>> dp;
 
 void solve() {
     cin >> k;
-    vector<num> dp(k+1, 0);
-    dp[1] = 1;
-    for (int i = 2; i <= k; i++) {
-        dp[i] = 16 * dp[i-1] * dp[i-1];
-    }
-    // dp i == (k-i)th layer, fix root, number of ways
     cin >> n;
-    map<ll, int> mp;
+    unordered_map<ll, ll> mp;
+    set<ll> marked;
     for (int i = 0; i < n; i++) {
-        int v; string s;
+        ll v; string s;
         cin >> v >> s;
-        if (s == "white" || s == "yellow")
+        if (s == "white")
             mp[v] = 0;
-        else if (s == "green" || s == "blue")
+        else if (s == "yellow")
+            mp[v] = 3;
+        else if (s == "green")
             mp[v] = 1;
-        else
+        else if (s == "blue")
+            mp[v] = 4;
+        else if (s == "red") 
             mp[v] = 2;
-    }
-    map<ll, array<num,3>> d;
-    for (int i = 1; i <= k; i++) {
-        for (auto p : mp) {
-            if (p.first >= (1LL << (k-i)) && p.first < (1LL << (k-i+1))) {
-                ll p1 = p.first;
-                ll p2 = p.first ^ 1LL;
-                ll pa = p.first >> 1LL;
-                bool isp2 = (mp.find(p2) != mp.end());
-                bool ispa = (mp.find(pa) != mp.end());
-                if (ispa) {
-                    if (isp1) {
-                        if (mp[pa] == mp[p1]) {
-                            cout << "0\n";
-                            return;
-                        }
-                        if (mp[p2] == mp[p1]) {
-                            d[pa] = {0,0,0};
-                            for (int j = 0; j < 3; j++) {
-                                if (j != mp[p2]) {
-                                    d[pa][j] = d[p1][mp[p1]]
-                                } else {
-                                    d[pa][j] = 
-                                }
-                            }
-                        } else {
+        else
+            mp[v] = 5;
 
-                        }
-                    } else {
-
-                    }
-                } else {
-                    if (isp1) {
-
-                    }
-                }
-            }
+        ll u = v;
+        while (u) {
+            marked.insert(u);
+            u >>= 1;
         }
     }
+    vector<ll> mark_list;
+    for (ll v : marked)
+        mark_list.push_back(v);
+    reverse(mark_list.begin(), mark_list.end());
+    for (ll v : mark_list) {
+        dp[v] = {};
+        if (mp.find(v) != mp.end()) {
+            // is colored
+            if (2 * v >= (1LL << k)) {
+                dp[v][mp[v]] = 1;
+                continue;
+            }
+            num l = 0, r = 0;
+            if (marked.find(2*v) == marked.end())
+                l = 1;
+            else
+                for (int c = 0; c < 6; c++)
+                    if (c % 3 != mp[v] % 3)
+                        l += dp[v*2][c];
+            if (marked.find(2*v+1) == marked.end())
+                r = 1;
+            else
+                for (int c = 0; c < 6; c++)
+                    if (c % 3 != mp[v] % 3)
+                        r += dp[v*2+1][c];
+            dp[v][mp[v]] = l * r;
+            continue;
+        }
+        // not colored
+        if (2 * v >= (1LL << k)) {
+            for (int c = 0; c < 6; c++)
+                dp[v][c] = 1;
+            continue;
+        }
+        //assert(2 * v < (1LL << k));
+        for (int d = 0; d < 6; d++) {
+            num l = 0, r = 0;
+            if (marked.find(2*v) == marked.end())
+                l = 1;
+            else
+                for (int c = 0; c < 6; c++)
+                    if (c % 3 != d % 3)
+                        l += dp[v*2][c];
+            if (marked.find(2*v+1) == marked.end())
+                r = 1;
+            else
+                for (int c = 0; c < 6; c++)
+                    if (c % 3 != d % 3)
+                        r += dp[v*2+1][c];
+            dp[v][d] = l * r;
+        }
+    }
+    num res = 0;
+    for (int c = 0; c < 6; c++)
+        res += dp[1][c];
+    cout << res * pow(num(4), (1LL << k) - (ll)marked.size() - 1) << "\n";
 }
 
 int main() {
