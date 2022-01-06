@@ -10,7 +10,7 @@ struct FlowEdge {
     long long cap, flow = 0;
     FlowEdge(int u, int v, long long cap) : u(u), v(v), cap(cap) {}
 };
-struct Dinic {
+struct MaxFlow {
     const long long flow_inf = 1e18;
     vector<FlowEdge> edges;
     vector<vector<int>> adj;
@@ -18,7 +18,7 @@ struct Dinic {
     int s, t;
     vector<int> level, ptr;
     queue<int> q;
-    Dinic(int n, int s, int t) : n(n), s(s), t(t) {
+    MaxFlow(int n, int s, int t) : n(n), s(s), t(t) {
         adj.resize(n);
         level.resize(n);
         ptr.resize(n);
@@ -90,7 +90,7 @@ void solve() {
         cin >> x;
     for (auto& x : b)
         cin >> x;
-    Dinic G(n+2, n, n+1);
+    MaxFlow G(n+2, n, n+1);
     vector<int> last(101, -1);
     ll res = 0;
     for (int i = 0; i < n; i++) {
