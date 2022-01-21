@@ -14,7 +14,7 @@ ll gcd(ll a, ll b) {
 
 void solve() {
     cin >> n >> k;
-    vector<ll> x (n, 0);
+    vector<ll> x(n, 0);
     for (auto& y : x)
         cin >> y;
     ll g = abs(x[1]-x[0]);
