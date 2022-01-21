@@ -62,17 +62,10 @@ void solve() {
             j++;
         }
         j = max(j, i+1);
-        //cout << j << " ";
         // can remove n-j
         ll to_add = n+1-j;
         if (check())
             to_add++;
-        /*
-        cout << i << " " << a[i] << " " << to_add << "\n";
-        for (auto p : cur) {
-            cout << p.first << " " << p.second << "\n";
-        }
-        */
         res += to_add;
         for (auto p : cnt[i])
             cur[p.first] -= p.second;

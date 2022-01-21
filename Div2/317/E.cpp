@@ -15,11 +15,9 @@ string res;
 vector<int> cycle;
  
 void dfs1(int v) {
-    //cout << v << "!";
     vis[v] = true;
     for (auto [u, i, j] : adj[v]) {
         if (!vis[u]) {
-            //cout << v << "-" << u << " " << i << " " << j << "\n";
             res[i] = '0' + j;
             dfs1(u);
         }
@@ -27,7 +25,6 @@ void dfs1(int v) {
 }
  
 bool dfs_cycle(int v, int pe) { // passing vertex and its parent vertex
-    //cout << v << " " << pe << "\n";
     vis2[v] = true;
     for (auto [u, i, j] : adj[v]) {
         if (i == pe)
@@ -46,7 +43,6 @@ bool dfs_cycle(int v, int pe) { // passing vertex and its parent vertex
 }
  
 bool find_cycle(int v) {
-    //vis.assign(n, false);
     cycle_start = -1;
 
     if (!dfs_cycle(v, parent[v][1]))
@@ -61,7 +57,6 @@ bool find_cycle(int v) {
         cycle.push_back(cycle_start);
         reverse(cycle.begin(), cycle.end());
         for (int l = 0; l < cycle.size(); l++) {
-            //cout << cycle[l] << " ";
             auto [u, i, j] = parent[cycle[l]];
             res[i] = '0' + j;
         }
@@ -73,7 +68,6 @@ bool find_cycle(int v) {
 void solve() {
     cin >> n >> m;
     ok.assign(n+1, 0);
-    //vector<array<int,2>> has(n+1, {0, 0});
     res = string(m, '?');
     vector<vector<vector<int>>> has(m, vector<vector<int>>(2));
     adj.resize(n);
