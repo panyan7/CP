@@ -39,7 +39,6 @@ void solve() {
             p[i] = -p[i];
         }
     }
-
     
     vector<array<ll,3>> vt;
     for (int i = 2; i <= n; i++) {
@@ -90,9 +89,9 @@ void solve() {
             cout << abs(x-a[1])+pc[n-2]+pp[n-2]*x << "\n";
             continue;
         }
-        int lo = 0, hi = n-2;
+        ll lo = 0, hi = n-2;
         while (lo+1 < hi) {
-            int mid = lo + (hi-lo)/2;
+            ll mid = lo + (hi-lo)/2;
             if (vt[mid][0] >= x)
                 hi = mid;
             else

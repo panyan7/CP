@@ -50,14 +50,12 @@ struct MinCostFlow {
             }
         }
     }
-    long long flow(long long k = -1) {
-        if (k == -1)
-            k = INF;
+    pair<long long, long long> flow() {
         long long flow = 0;
         long long cost = 0;
         vector<long long> d;
         vector<int> p;
-        while (flow < k) {
+        while (flow < INF) {
             shortest_paths(s, d, p);
             if (d[t] == INF)
                 break;
@@ -81,10 +79,7 @@ struct MinCostFlow {
             }
             ans.push_back({flow, cost});
         }
-        if (k < INF && flow < k)
-            return -1;
-        else
-            return cost;
+        return {flow, cost};
     }
 };
 
@@ -181,8 +176,8 @@ void solve() {
         }
         G.add_edge(i+n, i+2*n, G.INF, 0);
     }
-    ll res = G.flow();
-    res += cnt*1e8;
+    pll res = G.flow();
+    res.second += cnt*1e8;
     for (int i = 0; i < G.m; i += 2) {
         auto edge = G.edges[i];
         int u = edge.u, v = edge.v;
@@ -199,7 +194,7 @@ void solve() {
             }
         }
     }
-    cout << -res << "\n";
+    cout << -res.second << "\n";
 }
 
 int main() {
