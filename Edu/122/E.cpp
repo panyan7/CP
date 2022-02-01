@@ -39,6 +39,7 @@ void solve() {
         u--, v--;
         edges[i] = {w, u, v};
     }
+    sort(edges.begin(), edges.end());
     ll p, k, a, b, c;
     cin >> p >> k >> a >> b >> c;
     vector<ll> queries;
@@ -46,19 +47,21 @@ void solve() {
         ll q; cin >> q;
         queries.push_back(q);
     }
-    set<ll> crit;
+    vector<ll> crit;
     ll res = 0;
-    crit.insert(0);
-    crit.insert(c-1);
+    crit.push_back(0);
+    crit.push_back(c-1);
     for (int i = 0; i < m; i++) {
-        crit.insert(edges[i][0]);
         for (int j = i; j < m; j++) {
-            crit.insert((edges[i][0] + edges[j][0]) / 2);
-            crit.insert(-1 + (edges[i][0] + edges[j][0]) / 2);
-            //crit.insert(1 + (edges[i][0] + edges[j][0]) / 2);
+            crit.push_back((edges[i][0] + edges[j][0] + 1) / 2);
+            crit.push_back((edges[i][0] + edges[j][0]) / 2);
+            crit.push_back(-1 + (edges[i][0] + edges[j][0]) / 2);
         }
     }
-    map<ll,pll> mp;
+    sort(crit.begin(), crit.end());
+    crit.erase(unique(crit.begin(), crit.end()), crit.end());
+    vector<pll> ans;
+    int idx = 0;
     for (ll x : crit) {
         init();
         sort(edges.begin(), edges.end(), [&](array<ll,3> a, array<ll,3> b) {
@@ -79,23 +82,20 @@ void solve() {
                 union_sets(edges[j][1], edges[j][2]);
             }
         }
-        mp[x] = {res, num_pos};
-        //cout << x << ":" << res << " " << num_pos << "\n";
+        ans.push_back({res, num_pos});
     }
     ll final_res = 0;
     ll x = queries[p-1];
     for (int i = 0; i < p; i++) {
-        auto it = mp.lower_bound(queries[i]);
-        ll res = it->second.first - it->second.second * queries[i];
+        int idx = int(lower_bound(crit.begin(), crit.end(), queries[i]) - crit.begin());
+        ll res = ans[idx].first - ans[idx].second * queries[i];
         final_res = final_res ^ res;
-        //cout << queries[i] << " " << res << "\n";
     }
     for (int i = p; i < k; i++) {
         x = ((((x * a) % c) + b) % c);
-        auto it = mp.lower_bound(x);
-        ll res = it->second.first - it->second.second * x;
+        int idx = int(lower_bound(crit.begin(), crit.end(), x) - crit.begin());
+        ll res = ans[idx].first - ans[idx].second * x;
         final_res = final_res ^ res;
-        //cout << queries[i] << " " << res << "\n";
     }
     cout << final_res << "\n";
 }
