@@ -4,9 +4,12 @@ using namespace std;
 #define pii pair<int,int>
 #define pll pair<long long,long long>
 
-int tt = 1, n, m, k;
+int tt = 1;
 
 void solve() {
+    ll n, s;
+    cin >> n >> s;
+    cout << (s / (n * n)) << "\n";
 }
 
 int main() {
