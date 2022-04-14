@@ -5,11 +5,67 @@ using namespace std;
 #define pll pair<long long,long long>
 
 int tt = 1, n, m, k;
+ll dp[200005][2][2];
+ll w[200005];
+bool vis[200005];
+vector<vector<int>> adj;
 
-// check long long
+void dfs(int v) {
+    vis[v] = true;
+    dp[v][1][0] = 1;
+    dp[v][1][1] = adj[v].size();
+    dp[v][0][1] = 0;
+    dp[v][0][1] = 1;
+    for (int u : adj[v]) {
+        if (!vis[u]) {
+            dfs(u);
+            dp[v][1][0] += dp[u][0][0];
+            dp[v][1][1] += dp[u][0][1];
+            if (dp[u][0][0] > dp[u][1][0]) {
+                dp[v][0][0] += dp[u][0][0];
+                dp[v][0][1] += dp[u][0][1];
+            } else if (dp[u][0][0] < dp[u][1][0]){
+                dp[v][0][0] += dp[u][1][0];
+                dp[v][0][1] += dp[u][1][1];
+            } else {
+                if (dp[u][0][1] < dp[u][1][1]) {
+                    dp[v][0][0] += dp[u][0][0];
+                    dp[v][0][1] += dp[u][0][1];
+                } else {
+                    dp[v][0][0] += dp[u][1][0];
+                    dp[v][0][1] += dp[u][1][1];
+                }
+            }
+        }
+    }
+}
+
+void dfs2(int v, bool f=false) {
+    if (f) {
+        w[v] = 1;
+        f = false;
+    } else {
+        if (dp[v][1][0] > dp[v][0][0]) {
+            f = true;
+            w[v] = adj[v].size();
+        } else if (dp[v][0][0] == dp[v][1][0] && dp[v][1][1] < dp[v][0][1]) {
+            f = true;
+            w[v] = adj[v].size();
+        } else {
+            w[v] = 1;
+        }
+    }
+    for (int u : adj[v]) {
+        if (w[u] == 0) {
+            dfs2(u, f);
+        }
+    }
+}
+
 void solve() {
     cin >> n;
-    vector<vector<int>> adj(n);
+    adj.resize(n);
+    memset(dp, 0, sizeof(dp));
     for (int i = 0; i < n-1; i++) {
         int u, v;
         cin >> u >> v;
@@ -21,94 +77,21 @@ void solve() {
         cout << "2 2\n1 1\n";
         return;
     }
-    // make adj
-    vector<int> side(n, -1);
-    bool is_bipartite = true;
-    queue<int> q;
-    for (int st = 0; st < n; ++st) {
-        if (side[st] == -1) {
-            q.push(st);
-            side[st] = 0;
-            while (!q.empty()) {
-                int v = q.front();
-                q.pop();
-                for (int u : adj[v]) {
-                    if (side[u] == -1) {
-                        side[u] = side[v] ^ 1;
-                        q.push(u);
-                    } else {
-                        is_bipartite &= side[u] != side[v];
-                    }
-                }
-            }
-        }
-    }
-    assert(is_bipartite);
-    int cnt[2] = {0, 0}, w[2] = {0, 0};
-    vector<vector<int>> res(2, vector<int>(n, 1));
-    for (int s = 0; s < 2; s++) {
-        for (int i = 0; i < n; i++) {
-            if (side[i] == s) {
-                cnt[s]++;
-                res[s][i] = adj[i].size();
-            }
-            w[s] += res[s][i];
-        }
-    }
-    for (int s = 0; s < 2; s++) {
-        q = queue<int>();
-        vector<bool> vis(n, 0);
-        for (int i = 0; i < n; i++) {
-            if (adj[i].size() == 1 && side[i] != s) {
-                q.push(i);
-                vis[i] = true;
-            }
-        }
-        while (!q.empty()) {
-            int v = q.front();
-            q.pop();
-            int cnt = 0;
-            for (int u : adj[v]) {
-                if (!vis[u] && side[u] == s) {
-                    cnt++;
-                }
-            }
-            if (cnt == 1) {
-                for (int u : adj[v]) {
-                    if (!vis[u] && side[u] == s) {
-                        vis[u] = true;
-                        w[s] -= res[s][u] + res[s][v];
-                        res[s][u] = 1;
-                        //assert(adj[v].size() <= 2);
-                        res[s][v] = adj[v].size();
-                        w[s] += res[s][u] + res[s][v];
-                        for (int w : adj[u]) {
-                            if (!vis[w]) {
-                                vis[w] = true;
-                                q.push(w);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    int s = 0;
-    if (cnt[0] == cnt[1]) {
-        s = (w[0] < w[1] ? 0 : 1);
-    } else {
-        s = (cnt[0] > cnt[1] ? 0 : 1);
-    }
-    cout << cnt[s] << " " << w[s] << "\n";
+    dfs(0);
+    dfs2(0);
+    ll res = 0;
     for (int i = 0; i < n; i++)
-        cout << res[s][i] << " ";
+        res += w[i];
+    cout << max(dp[0][0][0], dp[0][1][0]) << " " << res << "\n";
+    for (int i = 0; i < n; i++)
+        cout << w[i] << " ";
     cout << "\n";
 }
 
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    //cin >> tt;
+    // cin >> tt;
     while (tt--) {
         solve();
     }
