@@ -4,20 +4,21 @@ using namespace std;
 #define pii pair<int,int>
 #define pll pair<long long,long long>
 
-ll tt = 1, n, m, k;
+int tt = 1, n, m, k;
 
 void solve() {
-    string s;
-    cin >> s;
-    n = s.size();
-    ll a = 0, b = 0;
+    cin >> n;
+    vector<int> a(n);
+    for (auto& x : a)
+        cin >> x;
+    ll num_one = 0, num_zero = 0;
     for (int i = 0; i < n; i++) {
-        if (i % 2 == 0)
-            a = a * 10 + (s[i] - '0');
-        else
-            b = b * 10 + (s[i] - '0');
+        if (a[i] == 0)
+            num_zero++;
+        else if (a[i] == 1)
+            num_one++;
     }
-    cout << (a + 1) * (b + 1) - 2 << "\n";
+    cout << num_one * (1LL << num_zero) << "\n";
 }
 
 int main() {
