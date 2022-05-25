@@ -7,14 +7,13 @@ using namespace std;
 
 int tt = 1, n, m, k;
 const ull i19 = 10000000000000000000ULL;
+ull p[20];
 unordered_map<ull, ll> mem;
 
 ll f(ull x) {
     if (mem.count(x))
         return mem[x];
-    if (x >= i19)
-        return 0;
-    if (x >= pow(10ULL, n-1))
+    if (x >= p[n-1])
         return 0;
     ull y = x;
     vector<int> cnt(10, 0);
@@ -28,7 +27,6 @@ ll f(ull x) {
             continue;
         res = min(res, f(x*(ull)i));
     }
-    // cout << x << " " << res << "\n";
     mem[x] = res+1;
     return res+1;
 }
@@ -47,6 +45,9 @@ int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
     // cin >> tt;
+    p[0] = 1;
+    for (int i = 1; i <= 19; i++)
+        p[i] = p[i-1] * 10ULL;
     while (tt--) {
         solve();
     }
