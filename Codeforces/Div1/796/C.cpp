@@ -15,33 +15,20 @@ void solve() {
         cin >> a[i];
     for (int i = 1; i <= n; i++)
         cin >> b[i];
-    for (int i = 0; i <= n; i++)
-        pa[i] = 0;
-    for (int i = 0; i <= n; i++)
-        pb[i] = 0;
     for (int i = 1; i <= n; i++)
         pa[i] = pa[i-1] + a[i];
     for (int i = 1; i <= n; i++)
         pb[i] = pb[i-1] + b[i];
     vector<pll> s(m);
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < m; i++)
         cin >> s[i].first >> s[i].second;
-    }
-    for (int i = 0; i <= n; i++)
-        pos[i] = 0;
-    for (int i = 0; i <= n; i++)
-        lm[i] = 0;
-    for (int i = 0; i <= n; i++)
-        rm[i] = 0;
     int l = 1, r = 1;
     int idx = 0;
     set<int> st;
-    pos[0] = -1;
     while (l <= n) {
         r = l;
-        while (r <= n && (pa[r] - pa[l-1]) != (pb[r] - pb[l-1])) {
+        while (r <= n && (pa[r] - pa[l-1]) != (pb[r] - pb[l-1]))
             r++;
-        }
         if (r > n) {
             cout << "NO\n";
             return;
@@ -72,11 +59,9 @@ void solve() {
         }
     }
     queue<int> q;
-    for (int i = 0; i < m; i++) {
-        if (dep[i] == 0) {
+    for (int i = 0; i < m; i++)
+        if (dep[i] == 0)
             q.push(i);
-        }
-    }
     while (!q.empty()) {
         int i = q.front();
         q.pop();
@@ -85,18 +70,14 @@ void solve() {
         for (auto it = it1; it != it2; it++) {
             for (int j : reqs[*it]) {
                 dep[j]--;
-                if (dep[j] == 0) {
+                if (dep[j] == 0)
                     q.push(j);
-                }
             }
             reqs[*it].clear();
         }
         st.erase(it1, it2);
     }
-    if (st.size() > 0)
-        cout << "NO\n";
-    else
-        cout << "YES\n";
+    cout << (st.size() > 0 ? "NO\n" : "YES\n");
 }
 
 int main() {
