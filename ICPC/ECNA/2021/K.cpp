@@ -93,7 +93,7 @@ int main() {
             q.pop();
 
             for (auto& a : gr[c]) {
-                if(visited[a]) continue;
+                if (visited[a]) continue;
                 visited[a] = true;
                 d2[a] = d2[c]+1;
                 q.push(a);
