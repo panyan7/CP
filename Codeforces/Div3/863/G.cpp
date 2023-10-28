@@ -137,19 +137,14 @@ void solve() {
         max_len[i] = max_len[i-1];
         for (int j = 0; j <= idx[i]-k+1; j++) {
             int l = mp[c[i]][j];
-            // a[i][l] += choose(idx[i]-j-1, k-2);
             max_len[i] = max(max_len[i], max_len[l-1] + 1);
         }
     }
     vector<num> p(n + 1);
     p[0] = 1;
     for (int i = 1; i <= n; i++) {
-        for (int j = i-1; j >= 0; j--) {
-            if (max_len[j] == max_len[i]) {
-                p[i] += p[j];
-                break;
-            }
-        }
+        if (max_len[i-1] == max_len[i])
+            p[i] += p[i-1];
         for (int j = 0; j <= idx[i]-k+1; j++) {
             int l = mp[c[i]][j];
             if (max_len[l-1] + 1 == max_len[i]) {
